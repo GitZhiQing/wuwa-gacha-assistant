@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import type { GachaRecordRow, OverviewStats, PoolAnalysis } from "@/lib/types";
-import { loadRecords } from "@/lib/db";
 
 interface GachaState {
   // 原始数据
@@ -12,51 +11,32 @@ interface GachaState {
   poolAnalyses: Map<number, PoolAnalysis>;
 
   // Actions
-  loadFromDatabase: (userId: string) => Promise<void>;
-  setOverview: (stats: OverviewStats) => void;
-  setPoolAnalysis: (poolType: number, analysis: PoolAnalysis) => void;
+  setAnalysisResult: (
+    allRecords: Map<number, GachaRecordRow[]>,
+    overview: OverviewStats,
+    poolAnalyses: Map<number, PoolAnalysis>
+  ) => void;
+  setLoading: (loading: boolean) => void;
   clearAll: () => void;
 }
 
-export const useGachaStore = create<GachaState>((set, get) => ({
+export const useGachaStore = create<GachaState>((set) => ({
   allRecords: new Map(),
-  isLoading: false,
+  isLoading: true,
 
   overview: null,
   poolAnalyses: new Map(),
 
-  loadFromDatabase: async (userId: string) => {
-    set({ isLoading: true });
-    try {
-      const poolTypes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      const allRecords = new Map<number, GachaRecordRow[]>();
+  setAnalysisResult: (allRecords, overview, poolAnalyses) =>
+    set({ allRecords, overview, poolAnalyses, isLoading: false }),
 
-      for (const pt of poolTypes) {
-        const records = await loadRecords(userId, pt);
-        if (records.length > 0) {
-          allRecords.set(pt, records);
-        }
-      }
-
-      set({ allRecords, isLoading: false });
-    } catch (e) {
-      console.error("Failed to load from database:", e);
-      set({ isLoading: false });
-    }
-  },
-
-  setOverview: (stats) => set({ overview: stats }),
-
-  setPoolAnalysis: (poolType, analysis) => {
-    const poolAnalyses = new Map(get().poolAnalyses);
-    poolAnalyses.set(poolType, analysis);
-    set({ poolAnalyses });
-  },
+  setLoading: (isLoading) => set({ isLoading }),
 
   clearAll: () =>
     set({
       allRecords: new Map(),
       overview: null,
       poolAnalyses: new Map(),
+      isLoading: false,
     }),
 }));

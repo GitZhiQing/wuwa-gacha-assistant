@@ -9,62 +9,28 @@ import { PityChart } from "@/components/analysis/PityChart";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGachaStore } from "@/store/gacha-store";
-import { useUserStore } from "@/store/user-store";
-import { loadParams, getLastSyncAt } from "@/lib/params";
-import { loadRecords } from "@/lib/db";
-import { runFullAnalysis } from "@/lib/gacha-analysis";
+import { useGachaInit } from "@/hooks/useGachaInit";
 import { POOL_TYPE_MAP } from "@/lib/constants";
-import type { GachaRecordRow } from "@/lib/types";
+
+/** 无数据卡池的提示消息 */
+const EMPTY_POOL_MESSAGES: Record<string, string> = {
+  collaborate: "该卡池暂无抽卡记录（联动卡池将于 3.4 版本上线）",
+  beginner: "该卡池暂无抽卡记录",
+  default: "暂无数据，请先同步抽卡记录",
+};
+
+function getEmptyPoolMessage(poolType: number): string {
+  if (poolType === 9 || poolType === 10) return EMPTY_POOL_MESSAGES.collaborate;
+  if (poolType === 7 || poolType === 8) return EMPTY_POOL_MESSAGES.beginner;
+  return EMPTY_POOL_MESSAGES.default;
+}
 
 export default function AnalysisPage() {
   const router = useRouter();
-  const {
-    allRecords,
-    poolAnalyses,
-    overview,
-    isLoading,
-  } = useGachaStore();
-  const { setParams, setLastSyncAt, hasParams } = useUserStore();
+  const { allRecords, poolAnalyses, isLoading } = useGachaStore();
+  const { hasData } = useGachaInit({ redirectIfNoParams: true });
 
   const [activeTab, setActiveTab] = useState(1);
-
-  // 初始化
-  useEffect(() => {
-    async function init() {
-      if (overview) return; // 已有数据，跳过
-
-      const params = await loadParams();
-      if (params) {
-        setParams(params);
-      } else {
-        router.push("/import");
-        return;
-      }
-
-      const lastSync = await getLastSyncAt();
-      if (lastSync) setLastSyncAt(lastSync);
-
-      const allRecs = new Map<number, GachaRecordRow[]>();
-      for (const pt of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
-        const records = await loadRecords(params.playerId, pt);
-        if (records.length > 0) allRecs.set(pt, records);
-      }
-
-      if (allRecs.size > 0) {
-        const { overview, poolAnalyses } = runFullAnalysis(allRecs);
-        useGachaStore.setState({
-          allRecords: allRecs,
-          overview,
-          poolAnalyses,
-          isLoading: false,
-        });
-      } else {
-        useGachaStore.setState({ isLoading: false });
-      }
-    }
-
-    init();
-  }, [router, overview, setParams, setLastSyncAt]);
 
   // 选择第一个有数据的 Tab
   useEffect(() => {
@@ -90,7 +56,7 @@ export default function AnalysisPage() {
     );
   }
 
-  if (!hasParams || allRecords.size === 0) {
+  if (!hasData) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center space-y-4">
@@ -144,11 +110,7 @@ export default function AnalysisPage() {
         <div className="flex h-60 items-center justify-center rounded-lg border border-dashed">
           <div className="text-center">
             <p className="text-muted-foreground">
-              {activeTab === 9 || activeTab === 10
-                ? "该卡池暂无抽卡记录（联动卡池将于 3.4 版本上线）"
-                : activeTab === 7 || activeTab === 8
-                  ? "该卡池暂无抽卡记录"
-                  : "暂无数据，请先同步抽卡记录"}
+              {getEmptyPoolMessage(activeTab)}
             </p>
           </div>
         </div>

@@ -1,12 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { isTauri } from "@/lib/tauri";
 import { Minus, Square, X } from "lucide-react";
+
+interface WindowControls {
+  minimize: () => Promise<void>;
+  toggleMaximize: () => Promise<void>;
+  close: () => Promise<void>;
+}
 
 export function TitleBar() {
   const [mounted, setMounted] = useState(false);
   const [isMaximized, setIsMaximized] = useState(false);
+  const controlsRef = useRef<WindowControls | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -16,9 +23,20 @@ export function TitleBar() {
     import("@tauri-apps/api/window").then(({ getCurrentWindow }) => {
       const appWindow = getCurrentWindow();
 
-      appWindow.listen("tauri://resize", () => {
-        appWindow.isMaximized().then(setIsMaximized);
-      }).then((fn) => { unlisten = fn; });
+      // 缓存窗口控制方法，避免每次点击都动态导入
+      controlsRef.current = {
+        minimize: () => appWindow.minimize(),
+        toggleMaximize: () => appWindow.toggleMaximize(),
+        close: () => appWindow.close(),
+      };
+
+      appWindow
+        .listen("tauri://resize", () => {
+          appWindow.isMaximized().then(setIsMaximized);
+        })
+        .then((fn) => {
+          unlisten = fn;
+        });
 
       appWindow.isMaximized().then(setIsMaximized);
     });
@@ -28,23 +46,11 @@ export function TitleBar() {
     };
   }, []);
 
-  const handleMinimize = () => {
-    import("@tauri-apps/api/window").then(({ getCurrentWindow }) =>
-      getCurrentWindow().minimize()
-    );
-  };
-  const handleMaximize = () => {
-    import("@tauri-apps/api/window").then(({ getCurrentWindow }) =>
-      getCurrentWindow().toggleMaximize()
-    );
-  };
-  const handleClose = () => {
-    import("@tauri-apps/api/window").then(({ getCurrentWindow }) =>
-      getCurrentWindow().close()
-    );
-  };
+  const handleMinimize = () => controlsRef.current?.minimize();
+  const handleMaximize = () => controlsRef.current?.toggleMaximize();
+  const handleClose = () => controlsRef.current?.close();
 
-  // SSR 阶段和浏览器模式：不渲染任何内容（保持 SSR/CSR 一致）
+  // SSR 阶段和浏览器模式：不渲染任何内容
   if (!mounted || !isTauri()) return null;
 
   return (

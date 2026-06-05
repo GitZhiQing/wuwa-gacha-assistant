@@ -52,16 +52,15 @@ export function PlayerForm({
         <CardTitle>玩家参数配置</CardTitle>
         <CardDescription>
           请从游戏内抓包获取以下参数。
-          <a
-            href="#"
-            className="ml-1 text-primary underline"
-            onClick={(e) => {
-              e.preventDefault();
+          <button
+            type="button"
+            className="ml-1 text-primary underline cursor-pointer"
+            onClick={() => {
               // TODO: 显示帮助面板
             }}
           >
             如何获取？
-          </a>
+          </button>
         </CardDescription>
       </CardHeader>
       <CardContent>

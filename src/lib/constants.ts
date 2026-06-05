@@ -139,6 +139,9 @@ export const POOL_TYPE_MAP: Record<number, PoolTypeInfo> = {
   },
 };
 
+/** 所有卡池类型 */
+export const ALL_POOL_TYPES = Object.keys(POOL_TYPE_MAP).map(Number);
+
 /** 分析 Tab 中展示的卡池（排除新手/新旅等非核心池） */
 export const ANALYSIS_TAB_POOLS = [1, 2, 9, 10, 3, 4];
 

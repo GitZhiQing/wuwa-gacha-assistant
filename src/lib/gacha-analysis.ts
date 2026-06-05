@@ -83,9 +83,8 @@ function calculatePity(
       let isLost50_50 = false;
       let wasGuaranteed = false;
 
-      if (hasWarp && r.pool_type === 1) {
-        // 仅在角色活动唤取(1)中分析 50/50
-        // 联动角色(9)上线后也适用
+      // 角色活动唤取(1) 和 联动角色(9) 均适用 50/50 机制
+      if (hasWarp && (r.pool_type === 1 || r.pool_type === 9)) {
         if (guarantee) {
           // 大保底状态：必出限定
           wasGuaranteed = true;
@@ -102,22 +101,6 @@ function calculatePity(
             guarantee = true;
           }
           // else: 既不是限定也不是常驻角色（不应发生，保守处理）
-        }
-      }
-
-      if (hasWarp && r.pool_type === 9) {
-        // 联动角色池同样适用 50/50
-        if (guarantee) {
-          wasGuaranteed = true;
-          guarantee = false;
-        } else {
-          if (isLimited) {
-            guarantee = false;
-          } else if (STANDARD_CHAR_SET.has(r.name)) {
-            isLost50_50 = true;
-            wasGuaranteed = false;
-            guarantee = true;
-          }
         }
       }
 

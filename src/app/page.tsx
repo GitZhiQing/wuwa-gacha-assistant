@@ -1,71 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { BarChart3 } from "lucide-react";
 import { StatCard } from "@/components/overview/StatCard";
 import { OwnedList } from "@/components/overview/OwnedList";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useGachaStore } from "@/store/gacha-store";
 import { useUserStore } from "@/store/user-store";
-import { loadParams, getLastSyncAt } from "@/lib/params";
-import { loadRecords } from "@/lib/db";
-import { runFullAnalysis } from "@/lib/gacha-analysis";
-import type { GachaRecordRow } from "@/lib/types";
+import { useGachaInit } from "@/hooks/useGachaInit";
 
 export default function OverviewPage() {
   const router = useRouter();
-  const {
-    allRecords,
-    overview,
-    isLoading,
-    loadFromDatabase,
-    setOverview,
-    poolAnalyses,
-  } = useGachaStore();
-  const { hasParams, setParams, lastSyncAt, setLastSyncAt } = useUserStore();
+  const { overview, isLoading } = useGachaStore();
+  const { lastSyncAt } = useUserStore();
 
-  // 初始化：加载参数 + 数据 + 分析
-  useEffect(() => {
-    async function init() {
-      // 加载用户参数
-      const params = await loadParams();
-      if (params) {
-        setParams(params);
-      } else {
-        // 没有参数，跳转到导入页
-        router.push("/import");
-        return;
-      }
-
-      // 加载上次同步时间
-      const lastSync = await getLastSyncAt();
-      if (lastSync) setLastSyncAt(lastSync);
-
-      // 从数据库加载数据
-      const poolTypes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-      const allRecs = new Map<number, GachaRecordRow[]>();
-      for (const pt of poolTypes) {
-        const records = await loadRecords(params.playerId, pt);
-        if (records.length > 0) allRecs.set(pt, records);
-      }
-
-      // 运行分析
-      if (allRecs.size > 0) {
-        const { overview, poolAnalyses } = runFullAnalysis(allRecs);
-        useGachaStore.setState({
-          allRecords: allRecs,
-          overview,
-          poolAnalyses,
-          isLoading: false,
-        });
-      } else {
-        useGachaStore.setState({ isLoading: false });
-      }
-    }
-
-    init();
-  }, [router, setParams, setLastSyncAt]);
+  useGachaInit({ redirectIfNoParams: true });
 
   // 无数据状态
   if (!isLoading && (!overview || overview.totalPulls === 0)) {
@@ -165,28 +115,5 @@ export default function OverviewPage() {
         />
       </div>
     </div>
-  );
-}
-
-function BarChart3(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      {...props}
-    >
-      <path d="M3 3v18h18" />
-      <path d="M7 16h2" />
-      <path d="M11 11h2" />
-      <path d="M15 13h2" />
-      <path d="M19 7h2" />
-    </svg>
   );
 }
