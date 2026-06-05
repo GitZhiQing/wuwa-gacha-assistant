@@ -1,6 +1,6 @@
 [package]
 name = "wuwa-gacha-assistant"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Wuthering Waves gacha analysis desktop app"
 authors = ["QING"]
 edition = "2021"
