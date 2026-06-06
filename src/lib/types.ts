@@ -67,10 +67,8 @@ export interface FiveStarEntry {
 /** 概览统计 */
 export interface OverviewStats {
   totalPulls: number;
-  totalLimitedPulls: number;
-  avgPullsPerFiveStar: number;
-  avgPullsPerLimitedChar: number;
-  avgPullsPerLimitedWeapon: number;
+  totalFiveStars: number;
+  avgPity: number;
   ownedLimitedChars: string[];
   ownedLimitedWeapons: string[];
   ownedStandardChars: string[];

@@ -8,7 +8,6 @@ import {
   LIMITED_CHAR_SET,
   STANDARD_CHAR_SET,
   POOL_TYPE_MAP,
-  LIMITED_POOL_TYPES,
 } from "./constants";
 
 // ============================================================
@@ -188,11 +187,8 @@ export function calculateOverview(
   allRecords: Map<number, GachaRecordRow[]>
 ): OverviewStats {
   let totalPulls = 0;
-  let totalLimitedPulls = 0;
-  let totalFiveStarChars = 0;
+  let totalFiveStars = 0;
   let totalFiveStarPulls = 0;
-  let totalLimitedCharPulls = 0;
-  let totalLimitedWeaponPulls = 0;
   const ownedLimitedChars = new Set<string>();
   const ownedLimitedWeapons = new Set<string>();
   const ownedStandardChars = new Set<string>();
@@ -201,10 +197,6 @@ export function calculateOverview(
   for (const [poolType, records] of allRecords) {
     totalPulls += records.length;
 
-    if (LIMITED_POOL_TYPES.includes(poolType)) {
-      totalLimitedPulls += records.length;
-    }
-
     const analysis = analyses.get(poolType);
     if (!analysis) continue;
 
@@ -212,24 +204,19 @@ export function calculateOverview(
     if (!info) continue;
 
     for (const entry of analysis.fiveStarEntries) {
+      totalFiveStars++;
       totalFiveStarPulls += entry.pityCount;
 
       if (entry.resourceType === "角色") {
-        totalFiveStarChars++;
         if (entry.isLimited) {
           ownedLimitedChars.add(entry.name);
         } else {
           ownedStandardChars.add(entry.name);
         }
-
-        if (info.isLimited) {
-          totalLimitedCharPulls += entry.pityCount;
-        }
       } else {
         // 武器
         if (info.isLimited) {
           ownedLimitedWeapons.add(entry.name);
-          totalLimitedWeaponPulls += entry.pityCount;
         } else {
           ownedStandardWeapons.add(entry.name);
         }
@@ -237,34 +224,12 @@ export function calculateOverview(
     }
   }
 
-  const limitedCharCount = [...analyses.values()]
-    .filter((a) => {
-      const info = POOL_TYPE_MAP[a.poolType];
-      return info?.resourceType === "角色" && info?.isLimited;
-    })
-    .reduce((s, a) => s + a.fiveStarEntries.filter((e) => e.isLimited).length, 0);
-
-  const limitedWeaponCount = [...analyses.values()]
-    .filter((a) => {
-      const info = POOL_TYPE_MAP[a.poolType];
-      return info?.resourceType === "武器" && info?.isLimited;
-    })
-    .reduce((s, a) => s + a.totalFiveStars, 0);
-
   return {
     totalPulls,
-    totalLimitedPulls,
-    avgPullsPerFiveStar:
-      totalFiveStarChars > 0
-        ? Math.round((totalLimitedCharPulls / totalFiveStarChars) * 10) / 10
-        : 0,
-    avgPullsPerLimitedChar:
-      limitedCharCount > 0
-        ? Math.round((totalLimitedCharPulls / limitedCharCount) * 10) / 10
-        : 0,
-    avgPullsPerLimitedWeapon:
-      limitedWeaponCount > 0
-        ? Math.round((totalLimitedWeaponPulls / limitedWeaponCount) * 10) / 10
+    totalFiveStars,
+    avgPity:
+      totalFiveStars > 0
+        ? Math.round((totalFiveStarPulls / totalFiveStars) * 10) / 10
         : 0,
     ownedLimitedChars: [...ownedLimitedChars],
     ownedLimitedWeapons: [...ownedLimitedWeapons],
