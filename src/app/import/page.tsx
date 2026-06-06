@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { useUserStore } from "@/store/user-store";
+import { useGachaStore } from "@/store/gacha-store";
 import { useUserParams } from "@/hooks/useUserParams";
 import { saveParams } from "@/lib/params";
 import { fetchGachaData } from "@/lib/api";
@@ -30,6 +31,7 @@ export default function ImportPage() {
   const { params: savedParams, hasParams, isLoading: paramsLoading } = useUserParams();
   const { setParams: setStoreParams, setSyncing, setLastSyncAt, isSyncing } =
     useUserStore();
+  const { loadedUserId, clearAll: clearGachaStore } = useGachaStore();
 
   const [step, setStep] = useState<Step>(hasParams ? "pools" : "params");
   const [userParams, setUserParams] = useState<UserParams | null>(
@@ -53,6 +55,12 @@ export default function ImportPage() {
     await saveParams(params);
     setStoreParams(params);
     setUserParams(params);
+
+    // 切换了不同的 playerId → 清空旧用户的缓存数据
+    if (loadedUserId && loadedUserId !== params.playerId) {
+      clearGachaStore();
+    }
+
     setStep("pools");
   };
 
@@ -103,6 +111,9 @@ export default function ImportPage() {
 
       setSyncResults(sr);
       setLastSyncAt(new Date().toISOString());
+
+      // 同步完成后清空 gacha store，确保导航到概览/分析页时重新加载最新数据
+      clearGachaStore();
     } catch (e) {
       const msg = String(e);
       console.error("Sync failed:", msg);
@@ -111,7 +122,7 @@ export default function ImportPage() {
     } finally {
       setSyncing(false);
     }
-  }, [userParams, selectedPools, setSyncing, setLastSyncAt]);
+  }, [userParams, selectedPools, setSyncing, setLastSyncAt, clearGachaStore]);
 
   if (paramsLoading) {
     return (
