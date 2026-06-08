@@ -12,8 +12,8 @@ const POOL_NAMES: [&str; 10] = [
     "新手自选唤取",
     "角色新旅唤取",
     "武器新旅唤取",
-    "角色联动唤取",
     "武器联动唤取",
+    "角色联动唤取",
 ];
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -82,8 +82,8 @@ function calculatePity(
       let isLost50_50 = false;
       let wasGuaranteed = false;
 
-      // 角色活动唤取(1) 和 联动角色(9) 均适用 50/50 机制
-      if (hasWarp && (r.pool_type === 1 || r.pool_type === 9)) {
+      // 角色活动唤取(1) 和 联动角色(10) 均适用 50/50 机制
+      if (hasWarp && (r.pool_type === 1 || r.pool_type === 10)) {
         if (guarantee) {
           // 大保底状态：必出限定
           wasGuaranteed = true;

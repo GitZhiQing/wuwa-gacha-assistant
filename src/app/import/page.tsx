@@ -20,7 +20,7 @@ import { useGachaStore } from "@/store/gacha-store";
 import { useUserParams } from "@/hooks/useUserParams";
 import { saveParams } from "@/lib/params";
 import { fetchGachaData } from "@/lib/api";
-import { saveRecordsIncremental } from "@/lib/db";
+import { saveRecordsIncremental, clearAllData } from "@/lib/db";
 import { isTauri } from "@/lib/tauri";
 import type { UserParams, PoolApiResponse } from "@/lib/types";
 
@@ -42,6 +42,7 @@ export default function ImportPage() {
     { pool: string; newCount: number; error?: string }[]
   >([]);
   const [syncError, setSyncError] = useState<string | null>(null);
+  const [clearConfirm, setClearConfirm] = useState(false);
 
   // 初始化
   useEffect(() => {
@@ -124,6 +125,32 @@ export default function ImportPage() {
     }
   }, [userParams, selectedPools, setSyncing, setLastSyncAt, clearGachaStore]);
 
+  const handleClearData = useCallback(async () => {
+    if (!clearConfirm) {
+      setClearConfirm(true);
+      // 5 秒后自动取消确认状态
+      setTimeout(() => setClearConfirm(false), 5000);
+      return;
+    }
+
+    if (!userParams) return;
+
+    try {
+      await clearAllData(userParams.playerId);
+      clearGachaStore();
+      setClearConfirm(false);
+      toast.success("已清空所有抽卡数据");
+    } catch (e) {
+      console.error("Failed to clear data:", e);
+      toast.error("清空数据失败", { description: String(e) });
+    }
+  }, [clearConfirm, userParams, clearGachaStore]);
+
+  // 切换页面或参数变化时取消确认状态
+  useEffect(() => {
+    setClearConfirm(false);
+  }, [step]);
+
   if (paramsLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -183,6 +210,33 @@ export default function ImportPage() {
             >
               {isSyncing ? "同步中..." : "一键同步数据"}
             </Button>
+          )}
+
+          {/* 清空数据 */}
+          {userParams && (
+            <div className="border-t pt-4 mt-4">
+              <Button
+                variant={clearConfirm ? "destructive" : "outline"}
+                size="sm"
+                className="w-full"
+                onClick={handleClearData}
+                disabled={isSyncing}
+              >
+                {clearConfirm
+                  ? "⚠ 确认清空？所有抽卡数据将永久删除（再次点击确认）"
+                  : "清空所有数据"}
+              </Button>
+              {clearConfirm && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full mt-1"
+                  onClick={() => setClearConfirm(false)}
+                >
+                  取消
+                </Button>
+              )}
+            </div>
           )}
         </>
       )}

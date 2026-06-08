@@ -14,8 +14,8 @@ import { Button } from "@/components/ui/button";
 export const POOL_TYPES = [
   { type: 1, name: "角色活动唤取", group: "限定池" },
   { type: 2, name: "武器活动唤取", group: "限定池" },
-  { type: 9, name: "角色联动唤取", group: "联动池" },
-  { type: 10, name: "武器联动唤取", group: "联动池" },
+  { type: 9, name: "武器联动唤取", group: "联动池" },
+  { type: 10, name: "角色联动唤取", group: "联动池" },
   { type: 3, name: "角色常驻唤取", group: "常驻池" },
   { type: 4, name: "武器常驻唤取", group: "常驻池" },
   { type: 5, name: "新手唤取", group: "其他" },

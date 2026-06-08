@@ -123,19 +123,19 @@ export const POOL_TYPE_MAP: Record<number, PoolTypeInfo> = {
   },
   9: {
     type: 9,
-    name: "角色联动唤取",
-    isLimited: true,
-    hasWarp: true,
-    resourceType: "角色",
-    tabLabel: "联动角色",
-  },
-  10: {
-    type: 10,
     name: "武器联动唤取",
     isLimited: true,
     hasWarp: false,
     resourceType: "武器",
     tabLabel: "联动武器",
+  },
+  10: {
+    type: 10,
+    name: "角色联动唤取",
+    isLimited: true,
+    hasWarp: true,
+    resourceType: "角色",
+    tabLabel: "联动角色",
   },
 };
 
