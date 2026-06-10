@@ -14,14 +14,14 @@ import { Button } from "@/components/ui/button";
 export const POOL_TYPES = [
   { type: 1, name: "角色活动唤取", group: "限定池" },
   { type: 2, name: "武器活动唤取", group: "限定池" },
-  { type: 9, name: "武器联动唤取", group: "联动池" },
   { type: 10, name: "角色联动唤取", group: "联动池" },
+  { type: 11, name: "武器联动唤取", group: "联动池" },
   { type: 3, name: "角色常驻唤取", group: "常驻池" },
   { type: 4, name: "武器常驻唤取", group: "常驻池" },
   { type: 5, name: "新手唤取", group: "其他" },
   { type: 6, name: "新手自选唤取", group: "其他" },
-  { type: 7, name: "角色新旅唤取", group: "其他" },
-  { type: 8, name: "武器新旅唤取", group: "其他" },
+  { type: 8, name: "角色新旅唤取", group: "其他" },
+  { type: 9, name: "武器新旅唤取", group: "其他" },
 ];
 
 interface PoolSelectorProps {

@@ -105,29 +105,21 @@ export const POOL_TYPE_MAP: Record<number, PoolTypeInfo> = {
     resourceType: "角色",
     tabLabel: "新手自选",
   },
-  7: {
-    type: 7,
+  8: {
+    type: 8,
     name: "角色新旅唤取",
     isLimited: false,
     hasWarp: false,
     resourceType: "角色",
     tabLabel: "角色新旅",
   },
-  8: {
-    type: 8,
+  9: {
+    type: 9,
     name: "武器新旅唤取",
     isLimited: false,
     hasWarp: false,
     resourceType: "武器",
     tabLabel: "武器新旅",
-  },
-  9: {
-    type: 9,
-    name: "武器联动唤取",
-    isLimited: true,
-    hasWarp: false,
-    resourceType: "武器",
-    tabLabel: "联动武器",
   },
   10: {
     type: 10,
@@ -137,13 +129,21 @@ export const POOL_TYPE_MAP: Record<number, PoolTypeInfo> = {
     resourceType: "角色",
     tabLabel: "联动角色",
   },
+  11: {
+    type: 11,
+    name: "武器联动唤取",
+    isLimited: true,
+    hasWarp: false,
+    resourceType: "武器",
+    tabLabel: "联动武器",
+  },
 };
 
 /** 所有卡池类型 */
 export const ALL_POOL_TYPES = Object.keys(POOL_TYPE_MAP).map(Number);
 
 /** 分析 Tab 中展示的卡池（排除新手/新旅等非核心池） */
-export const ANALYSIS_TAB_POOLS = [1, 2, 9, 10, 3, 4];
+export const ANALYSIS_TAB_POOLS = [1, 2, 10, 11, 3, 4];
 
 /** 被视为"限定"的卡池类型 */
-export const LIMITED_POOL_TYPES = [1, 2, 9, 10];
+export const LIMITED_POOL_TYPES = [1, 2, 10, 11];

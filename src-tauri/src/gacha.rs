@@ -3,17 +3,18 @@ use tauri_plugin_http::reqwest;
 
 const API_URL: &str = "https://gmserver-api.aki-game2.com/gacha/record/query";
 
-const POOL_NAMES: [&str; 10] = [
-    "角色活动唤取",
-    "武器活动唤取",
-    "角色常驻唤取",
-    "武器常驻唤取",
-    "新手唤取",
-    "新手自选唤取",
-    "角色新旅唤取",
-    "武器新旅唤取",
-    "武器联动唤取",
-    "角色联动唤取",
+const POOL_NAMES: [&str; 11] = [
+    "角色活动唤取",     // 1
+    "武器活动唤取",     // 2
+    "角色常驻唤取",     // 3
+    "武器常驻唤取",     // 4
+    "新手唤取",         // 5
+    "新手自选唤取",     // 6
+    "",                 // 7 (不存在，占位)
+    "角色新旅唤取",     // 8
+    "武器新旅唤取",     // 9
+    "角色联动唤取",     // 10
+    "武器联动唤取",     // 11
 ];
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -57,7 +58,7 @@ pub async fn fetch_gacha_data(
     let mut results = Vec::new();
 
     for &pool_type in &pool_types {
-        if pool_type < 1 || pool_type > 10 {
+        if pool_type < 1 || pool_type > 11 {
             continue;
         }
 

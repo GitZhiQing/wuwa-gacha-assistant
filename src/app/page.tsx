@@ -19,8 +19,8 @@ const OVERVIEW_POOLS = LIMITED_POOL_TYPES; // [1, 2, 9, 10]
 const POOL_ICONS: Record<number, React.ComponentType<{ className?: string }>> = {
   1: Users,
   2: Sword,
-  9: Sparkles,
   10: Crosshair,
+  11: Sparkles,
 };
 
 function PoolSection({ analysis, poolType }: { analysis: PoolAnalysis; poolType: number }) {

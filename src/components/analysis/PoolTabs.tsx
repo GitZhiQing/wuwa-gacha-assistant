@@ -3,7 +3,7 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { POOL_TYPE_MAP } from "@/lib/constants";
 
-export const ANALYSIS_POOLS = [1, 2, 9, 10, 3, 4];
+export const ANALYSIS_POOLS = [1, 2, 10, 11, 3, 4];
 
 interface PoolTabsProps {
   activeTab: number;

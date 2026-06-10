@@ -20,8 +20,8 @@ const EMPTY_POOL_MESSAGES: Record<string, string> = {
 };
 
 function getEmptyPoolMessage(poolType: number): string {
-  if (poolType === 9 || poolType === 10) return EMPTY_POOL_MESSAGES.collaborate;
-  if (poolType === 7 || poolType === 8) return EMPTY_POOL_MESSAGES.beginner;
+  if (poolType === 10 || poolType === 11) return EMPTY_POOL_MESSAGES.collaborate;
+  if (poolType === 8 || poolType === 9) return EMPTY_POOL_MESSAGES.beginner;
   return EMPTY_POOL_MESSAGES.default;
 }
 
