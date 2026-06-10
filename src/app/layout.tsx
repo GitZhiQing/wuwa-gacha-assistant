@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
-import { Toaster } from "sonner";
-import { ThemeProvider } from "@/components/theme-provider";
-import { TitleBar } from "@/components/layout/TitleBar";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { ClientLayout } from "@/components/layout/ClientLayout";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -34,21 +31,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <ThemeProvider>
-          <TitleBar />
-          <Sidebar />
-          <main className="ml-56 mt-9 min-h-[calc(100vh-36px)]">{children}</main>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: "hsl(var(--card))",
-                color: "hsl(var(--card-foreground))",
-                border: "1px solid hsl(var(--border))",
-              },
-            }}
-          />
-        </ThemeProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );
