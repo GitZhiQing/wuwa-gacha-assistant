@@ -15,7 +15,7 @@ export function PoolStats({ analysis }: PoolStatsProps) {
       : 0;
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
       <StatItem label="总抽数" value={analysis.totalPulls} />
       <StatItem label="五星数" value={analysis.totalFiveStars} />
       {hasWarp && (
